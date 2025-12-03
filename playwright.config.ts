@@ -43,8 +43,8 @@ export default defineConfig({
   },
 
   metadata: {
-    appUsername: 'pwtest@nal.com',
-    appPassword: 'test123'
+    appUsername: 'adith442864@gmail.com',
+    appPassword: 'Selenium@12345'
   },
 
   /* Configure projects for major browsers */

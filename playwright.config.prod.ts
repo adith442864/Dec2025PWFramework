@@ -41,8 +41,8 @@ export default defineConfig({
   },
 
   metadata: {
-    appUsername: 'pwtest@nal.com',
-    appPassword: 'test123'
+    appUsername: 'adithautomation',
+    appPassword: 'Selenium@12345'
   },
 
   /* Configure projects for major browsers */
