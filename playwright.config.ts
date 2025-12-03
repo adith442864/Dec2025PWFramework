@@ -43,7 +43,7 @@ export default defineConfig({
   },
 
   metadata: {
-    appUsername: 'adith442864@gmail.com',
+    appUsername: 'adithautomation@gmail.com',
     appPassword: 'Selenium@12345'
   },
 
