@@ -35,7 +35,7 @@ export default defineConfig({
     trace: 'on-first-retry',
     headless: !!process.env.CI,  // false locally, true in CI
     screenshot: 'on',
-    video: 'off',
+    video: 'on',
     baseURL: 'https://naveenautomationlabs.com/opencart/index.php',
     
   },
