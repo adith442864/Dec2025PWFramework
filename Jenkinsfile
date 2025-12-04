@@ -38,7 +38,7 @@ pipeline {
         PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}/.cache/ms-playwright"
         SLACK_WEBHOOK_URL = credentials('slack-webhook-token')
         // Email recipients - update these with your actual email addresses
-        EMAIL_RECIPIENTS = 'naveenanimation20@gmail.com, submit@naveenautomationlabs.com'
+        EMAIL_RECIPIENTS = 'adithautomation@gmail.com, mail@adithautomation.com'
     }
 
     options {
@@ -650,8 +650,8 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 </html>""",
                         mimeType: 'text/html',
                         to: env.EMAIL_RECIPIENTS,
-                        from: 'CI Notifications <mail@naveenautomationlabs.com>',
-                        replyTo: 'mail@naveenautomationlabs.com'
+                        from: 'CI Notifications <mail@adithautomation.com>',
+                        replyTo: 'mail@adithautomation.com'
                     )
                 } catch (Exception e) {
                     echo "Email notification failed: ${e.message}"
@@ -803,8 +803,8 @@ ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
 </html>""",
                         mimeType: 'text/html',
                         to: env.EMAIL_RECIPIENTS,
-                        from: 'CI Notifications <mail@naveenautomationlabs.com>',
-                        replyTo: 'mail@naveenautomationlabs.com'
+                        from: 'CI Notifications <mail@adithautomation.com>',
+                        replyTo: 'mail@adithautomation.com'
                     )
                 } catch (Exception e) {
                     echo "Email notification failed: ${e.message}"
