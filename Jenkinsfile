@@ -62,9 +62,19 @@ pipeline {
         stage('🔍 ESLint Analysis') {
             steps {
                 echo '============================================'
+                echo '🧹 Cleaning workspace...'
+                echo '============================================'
+                sh '''
+                    # Clean node_modules and package-lock to ensure fresh install
+                    rm -rf node_modules package-lock.json
+                    # Clean any cached browsers
+                    rm -rf ${PLAYWRIGHT_BROWSERS_PATH}
+                '''
+
+                echo '============================================'
                 echo '📥 Installing dependencies...'
                 echo '============================================'
-                sh 'npm ci'
+                sh 'npm install'
 
                 echo '============================================'
                 echo '📁 Creating ESLint report directory...'
@@ -135,6 +145,10 @@ pipeline {
                     
                     # Show Playwright version
                     npx playwright --version
+                    
+                    # Verify config is using Chromium (not Chrome channel)
+                    echo "🔍 Verifying Playwright config..."
+                    grep -n "name.*Chromium" playwright.config.dev.ts || echo "⚠️ WARNING: Config may not be using Chromium!"
                 '''
 
                 echo '============================================'
