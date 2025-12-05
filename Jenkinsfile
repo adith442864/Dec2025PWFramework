@@ -37,9 +37,12 @@ pipeline {
         NODE_VERSION = '20'
         CI = 'true'
         PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}/.cache/ms-playwright"
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = '0'
+        // Force Rosetta 2 compatibility for M1 Macs
+        ARCHFLAGS = '-arch x86_64'
         SLACK_WEBHOOK_URL = credentials('slack-webhook')
         // Email recipients - update these with your actual email addresses
-        EMAIL_RECIPIENTS = 'mailto@adithautomation.com', 'submit@naveenautomationlabs.com','adithautomation.com'
+        EMAIL_RECIPIENTS = 'mailto@adithautomation.com'
     }
 
     options {
@@ -108,7 +111,17 @@ pipeline {
                 echo '============================================'
                 echo '🎭 Installing Playwright browsers...'
                 echo '============================================'
-                sh 'npx playwright install --with-deps chromium'
+                sh '''
+                    # Check if running on Apple Silicon (M1/M2/M3)
+                    if [[ $(uname -m) == "arm64" ]]; then
+                        echo "🍎 Apple Silicon detected - Installing with ARM64 support"
+                        # Install browsers with ARM64 support
+                        npx playwright install --with-deps chromium webkit
+                    else
+                        echo "💻 x86_64 detected - Installing standard browsers"
+                        npx playwright install --with-deps chromium
+                    fi
+                '''
 
                 echo '============================================'
                 echo '🧹 Cleaning previous results...'
@@ -348,7 +361,7 @@ pipeline {
                 echo '============================================'
                 script {
                     env.PROD_TEST_STATUS = sh(
-                        script: 'npx playwright test --grep "@login" --config=playwright.config.prod.ts',
+                        script: 'npx playwright test --grep "@login" --config=playwright.config.ts',
                         returnStatus: true
                     ) == 0 ? 'success' : 'failure'
                 }
@@ -360,7 +373,7 @@ pipeline {
                     mkdir -p allure-results
                     echo "Environment=PROD" > allure-results/environment.properties
                     echo "Browser=Google Chrome" >> allure-results/environment.properties
-                    echo "Config=playwright.config.prod.ts" >> allure-results/environment.properties
+                    echo "Config=playwright.config.ts" >> allure-results/environment.properties
                 '''
             }
             post {
