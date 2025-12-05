@@ -36,7 +36,7 @@ pipeline {
     environment {
         NODE_VERSION = '20'
         CI = 'true'
-        PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}/.cache/ms-playwright"
+        PLAYWRIGHT_BROWSERS_PATH = "${env.WORKSPACE}/.cache/ms-playwright"
         PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = '0'
         // Skip Puppeteer browser download (we use Playwright instead)
         PUPPETEER_SKIP_DOWNLOAD = 'true'
@@ -46,6 +46,8 @@ pipeline {
         SLACK_WEBHOOK_URL = credentials('slack-webhook')
         // Email recipients - update these with your actual email addresses
         EMAIL_RECIPIENTS = 'mailto@adithautomation.com'
+        // Ensure headless mode in CI
+        PLAYWRIGHT_HEADLESS = '1'
     }
 
     options {
@@ -115,16 +117,31 @@ pipeline {
                 echo '🎭 Installing Playwright browsers...'
                 echo '============================================'
                 sh '''
+                    # Clean any existing browser installations
+                    rm -rf ${PLAYWRIGHT_BROWSERS_PATH}
+                    
+                    # Create browser cache directory
+                    mkdir -p ${PLAYWRIGHT_BROWSERS_PATH}
+                    
+                    echo "📍 Browser installation path: ${PLAYWRIGHT_BROWSERS_PATH}"
+                    
                     # Check if running on Apple Silicon (M1/M2/M3)
                     if [[ $(uname -m) == "arm64" ]]; then
                         echo "🍎 Apple Silicon detected - Installing with ARM64 support"
-                        # Install browsers WITHOUT system dependencies (no sudo required)
-                        npx playwright install chromium webkit
+                        # Force fresh installation of browsers
+                        PLAYWRIGHT_BROWSERS_PATH=${PLAYWRIGHT_BROWSERS_PATH} npx playwright install --force chromium webkit
                     else
                         echo "💻 x86_64 detected - Installing standard browsers"
-                        # Install browsers WITHOUT system dependencies (no sudo required)
-                        npx playwright install chromium
+                        # Force fresh installation of browsers
+                        PLAYWRIGHT_BROWSERS_PATH=${PLAYWRIGHT_BROWSERS_PATH} npx playwright install --force chromium
                     fi
+                    
+                    # Verify browsers are installed
+                    echo "✅ Verifying browser installation..."
+                    ls -la ${PLAYWRIGHT_BROWSERS_PATH}/
+                    
+                    # Show Playwright version and browser info
+                    npx playwright --version
                 '''
 
                 echo '============================================'
