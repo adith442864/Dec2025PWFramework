@@ -50,12 +50,12 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
   {
-    name: 'Google Chrome',
+    name: 'Chromium',
     use: {
-      channel: 'chrome',
-      viewport: null,
+      ...devices['Desktop Chrome'],
+      viewport: process.env.CI ? { width: 1920, height: 1080 } : null,
       launchOptions: {
-        args: ['--start-maximized'],
+        args: process.env.CI ? ['--disable-dev-shm-usage'] : ['--start-maximized'],
         ignoreDefaultArgs: ['--window-size=1280,720']
       }
     }

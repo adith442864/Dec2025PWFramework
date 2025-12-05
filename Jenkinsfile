@@ -43,7 +43,7 @@ pipeline {
         PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = 'true'
         SLACK_WEBHOOK_URL = credentials('slack-webhook')
         // Email recipients - update these with your actual email addresses
-        EMAIL_RECIPIENTS = 'mailto@adithautomation.com'
+        EMAIL_RECIPIENTS = 'adithautomation@gmail.com'
         // Ensure headless mode in CI
         PLAYWRIGHT_HEADLESS = '1'
     }
@@ -389,7 +389,7 @@ pipeline {
                 echo '============================================'
                 script {
                     env.PROD_TEST_STATUS = sh(
-                        script: 'npx playwright test --grep "@login" --config=playwright.config.ts',
+                        script: 'npx playwright test --grep "@login" --config=playwright.config.prod.ts',
                         returnStatus: true
                     ) == 0 ? 'success' : 'failure'
                 }
@@ -400,8 +400,8 @@ pipeline {
                 sh '''
                     mkdir -p allure-results
                     echo "Environment=PROD" > allure-results/environment.properties
-                    echo "Browser=Google Chrome" >> allure-results/environment.properties
-                    echo "Config=playwright.config.ts" >> allure-results/environment.properties
+                    echo "Browser=Chromium" >> allure-results/environment.properties
+                    echo "Config=playwright.config.prod.ts" >> allure-results/environment.properties
                 '''
             }
             post {
@@ -471,20 +471,26 @@ pipeline {
                     
                     # Create combined environment.properties
                     echo "Environment=ALL (DEV, QA, STAGE, PROD)" > allure-results-combined/environment.properties
-                    echo "Browser=Google Chrome" >> allure-results-combined/environment.properties
+                    echo "Browser=Chromium" >> allure-results-combined/environment.properties
                     echo "Pipeline=${JOB_NAME}" >> allure-results-combined/environment.properties
                     echo "Build=${BUILD_NUMBER}" >> allure-results-combined/environment.properties
                 '''
             }
             post {
                 always {
-                    // Generate Combined Allure Report using Allure Jenkins Plugin
-                    allure([
-                        includeProperties: true,
-                        jdk: '',
-                        properties: [],
-                        reportBuildPolicy: 'ALWAYS',
-                        results: [[path: 'allure-results-combined']]
+                    // Generate Combined Allure Report using npx allure
+                    sh '''
+                        npx allure generate allure-results-combined --clean -o allure-report-combined
+                    '''
+                    
+                    publishHTML(target: [
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'allure-report-combined',
+                        reportFiles: 'index.html',
+                        reportName: 'Combined Allure Report',
+                        reportTitles: 'All Environments'
                     ])
                 }
             }
@@ -808,7 +814,7 @@ ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
 
             <div class="section-title">📊 Quick Links</div>
             <p style="margin: 15px 0;">
-                <a href="${env.BUILD_URL}allure" class="btn btn-green">📊 Combined Allure Report</a>
+                <a href="${env.BUILD_URL}Combined_20Allure_20Report" class="btn btn-green">📊 Combined Allure Report</a>
                 <a href="${env.BUILD_URL}ESLint_20Report" class="btn btn-purple">🔍 ESLint Report</a>
                 <a href="${env.BUILD_URL}" class="btn">🔗 View Build</a>
                 <a href="${env.BUILD_URL}console" class="btn btn-red">📋 Console Log</a>
