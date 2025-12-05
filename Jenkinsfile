@@ -118,11 +118,12 @@ pipeline {
                     # Check if running on Apple Silicon (M1/M2/M3)
                     if [[ $(uname -m) == "arm64" ]]; then
                         echo "🍎 Apple Silicon detected - Installing with ARM64 support"
-                        # Install browsers with ARM64 support
-                        npx playwright install --with-deps chromium webkit
+                        # Install browsers WITHOUT system dependencies (no sudo required)
+                        npx playwright install chromium webkit
                     else
                         echo "💻 x86_64 detected - Installing standard browsers"
-                        npx playwright install --with-deps chromium
+                        # Install browsers WITHOUT system dependencies (no sudo required)
+                        npx playwright install chromium
                     fi
                 '''
 
