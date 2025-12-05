@@ -38,7 +38,7 @@ pipeline {
         PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}/.cache/ms-playwright"
         SLACK_WEBHOOK_URL = credentials('slack-webhook')
         // Email recipients - update these with your actual email addresses
-        EMAIL_RECIPIENTS = 'adithautomation@gmail.com, mail@adithautomation.com'
+        EMAIL_RECIPIENTS = 'adithautomation@gmail.com', 'mail@adithautomation.com'
     }
 
     options {
@@ -100,87 +100,87 @@ pipeline {
             }
         }
 
-        // ============================================
-        // DEV Environment Tests
-        // ============================================
-        stage('🔧 DEV Tests') {
-            steps {
-                echo '============================================'
-                echo '🎭 Installing Playwright browsers...'
-                echo '============================================'
-                //sh 'npx playwright install --with-deps chromium'
-                sh 'npx playwright install chromium'
+        // // ============================================
+        // // DEV Environment Tests
+        // // ============================================
+        // stage('🔧 DEV Tests') {
+        //     steps {
+        //         echo '============================================'
+        //         echo '🎭 Installing Playwright browsers...'
+        //         echo '============================================'
+        //         //sh 'npx playwright install --with-deps chromium'
+        //         sh 'npx playwright install chromium'
 
-                echo '============================================'
-                echo '🧹 Cleaning previous results...'
-                echo '============================================'
-                sh 'rm -rf allure-results playwright-report playwright-html-report test-results'
+        //         echo '============================================'
+        //         echo '🧹 Cleaning previous results...'
+        //         echo '============================================'
+        //         sh 'rm -rf allure-results playwright-report playwright-html-report test-results'
 
-                echo '============================================'
-                echo '🧪 Running DEV tests...'
-                echo '============================================'
-                script {
-                    env.DEV_TEST_STATUS = sh(
-                        script: 'npx playwright test --grep "@login" --config=playwright.config.dev.ts',
-                        returnStatus: true
-                    ) == 0 ? 'success' : 'failure'
-                }
+        //         echo '============================================'
+        //         echo '🧪 Running DEV tests...'
+        //         echo '============================================'
+        //         script {
+        //             env.DEV_TEST_STATUS = sh(
+        //                 script: 'npx playwright test --grep "@login" --config=playwright.config.dev.ts',
+        //                 returnStatus: true
+        //             ) == 0 ? 'success' : 'failure'
+        //         }
 
-                echo '============================================'
-                echo '🏷️ Adding Allure environment info...'
-                echo '============================================'
-                sh '''
-                    mkdir -p allure-results
-                    echo "Environment=DEV" > allure-results/environment.properties
-                    echo "Browser=Chromium" >> allure-results/environment.properties
-                    echo "Config=playwright.config.dev.ts" >> allure-results/environment.properties
-                '''
-            }
-            post {
-                always {
-                    // Copy and generate DEV Allure Report
-                    sh '''
-                        mkdir -p allure-results-dev
-                        cp -r allure-results/* allure-results-dev/ 2>/dev/null || true
-                        npx allure generate allure-results-dev --clean -o allure-report-dev || true
-                    '''
+        //         echo '============================================'
+        //         echo '🏷️ Adding Allure environment info...'
+        //         echo '============================================'
+        //         sh '''
+        //             mkdir -p allure-results
+        //             echo "Environment=DEV" > allure-results/environment.properties
+        //             echo "Browser=Chromium" >> allure-results/environment.properties
+        //             echo "Config=playwright.config.dev.ts" >> allure-results/environment.properties
+        //         '''
+        //     }
+        //     post {
+        //         always {
+        //             // Copy and generate DEV Allure Report
+        //             sh '''
+        //                 mkdir -p allure-results-dev
+        //                 cp -r allure-results/* allure-results-dev/ 2>/dev/null || true
+        //                 npx allure generate allure-results-dev --clean -o allure-report-dev || true
+        //             '''
 
-                    // Publish DEV Allure HTML Report
-                    publishHTML(target: [
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'allure-report-dev',
-                        reportFiles: 'index.html',
-                        reportName: 'DEV Allure Report',
-                        reportTitles: 'DEV Allure Report'
-                    ])
+        //             // Publish DEV Allure HTML Report
+        //             publishHTML(target: [
+        //                 allowMissing: true,
+        //                 alwaysLinkToLastBuild: true,
+        //                 keepAll: true,
+        //                 reportDir: 'allure-report-dev',
+        //                 reportFiles: 'index.html',
+        //                 reportName: 'DEV Allure Report',
+        //                 reportTitles: 'DEV Allure Report'
+        //             ])
 
-                    publishHTML(target: [
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'playwright-report',
-                        reportFiles: 'index.html',
-                        reportName: 'DEV Playwright Report',
-                        reportTitles: 'DEV Playwright Report'
-                    ])
+        //             publishHTML(target: [
+        //                 allowMissing: true,
+        //                 alwaysLinkToLastBuild: true,
+        //                 keepAll: true,
+        //                 reportDir: 'playwright-report',
+        //                 reportFiles: 'index.html',
+        //                 reportName: 'DEV Playwright Report',
+        //                 reportTitles: 'DEV Playwright Report'
+        //             ])
 
-                    publishHTML(target: [
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'playwright-html-report',
-                        reportFiles: 'index.html',
-                        reportName: 'DEV HTML Report',
-                        reportTitles: 'DEV Custom HTML Report'
-                    ])
+        //             publishHTML(target: [
+        //                 allowMissing: true,
+        //                 alwaysLinkToLastBuild: true,
+        //                 keepAll: true,
+        //                 reportDir: 'playwright-html-report',
+        //                 reportFiles: 'index.html',
+        //                 reportName: 'DEV HTML Report',
+        //                 reportTitles: 'DEV Custom HTML Report'
+        //             ])
 
-                    archiveArtifacts artifacts: 'allure-results-dev/**/*', allowEmptyArchive: true
-                    archiveArtifacts artifacts: 'test-results/**/*', allowEmptyArchive: true
-                }
-            }
-        }
+        //             archiveArtifacts artifacts: 'allure-results-dev/**/*', allowEmptyArchive: true
+        //             archiveArtifacts artifacts: 'test-results/**/*', allowEmptyArchive: true
+        //         }
+        //     }
+        // }
 
         // ============================================
         // QA Environment Tests
@@ -334,83 +334,83 @@ pipeline {
             }
         }
 
-        // ============================================
-        // PROD Environment Tests
-        // ============================================
-        stage('🚀 PROD Tests') {
-            steps {
-                echo '============================================'
-                echo '🧹 Cleaning previous results...'
-                echo '============================================'
-                sh 'rm -rf allure-results playwright-report playwright-html-report test-results'
+        // // ============================================
+        // // PROD Environment Tests
+        // // ============================================
+        // stage('🚀 PROD Tests') {
+        //     steps {
+        //         echo '============================================'
+        //         echo '🧹 Cleaning previous results...'
+        //         echo '============================================'
+        //         sh 'rm -rf allure-results playwright-report playwright-html-report test-results'
 
-                echo '============================================'
-                echo '🧪 Running PROD tests...'
-                echo '============================================'
-                script {
-                    env.PROD_TEST_STATUS = sh(
-                        script: 'npx playwright test --grep "@login" --config=playwright.config.prod.ts',
-                        returnStatus: true
-                    ) == 0 ? 'success' : 'failure'
-                }
+        //         echo '============================================'
+        //         echo '🧪 Running PROD tests...'
+        //         echo '============================================'
+        //         script {
+        //             env.PROD_TEST_STATUS = sh(
+        //                 script: 'npx playwright test --grep "@login" --config=playwright.config.prod.ts',
+        //                 returnStatus: true
+        //             ) == 0 ? 'success' : 'failure'
+        //         }
 
-                echo '============================================'
-                echo '🏷️ Adding Allure environment info...'
-                echo '============================================'
-                sh '''
-                    mkdir -p allure-results
-                    echo "Environment=PROD" > allure-results/environment.properties
-                    echo "Browser=Chromium" >> allure-results/environment.properties
-                    echo "Config=playwright.config.prod.ts" >> allure-results/environment.properties
-                '''
-            }
-            post {
-                always {
-                    // Copy and generate PROD Allure Report
-                    sh '''
-                        mkdir -p allure-results-prod
-                        cp -r allure-results/* allure-results-prod/ 2>/dev/null || true
-                        npx allure generate allure-results-prod --clean -o allure-report-prod || true
-                    '''
+        //         echo '============================================'
+        //         echo '🏷️ Adding Allure environment info...'
+        //         echo '============================================'
+        //         sh '''
+        //             mkdir -p allure-results
+        //             echo "Environment=PROD" > allure-results/environment.properties
+        //             echo "Browser=Chromium" >> allure-results/environment.properties
+        //             echo "Config=playwright.config.prod.ts" >> allure-results/environment.properties
+        //         '''
+        //     }
+        //     post {
+        //         always {
+        //             // Copy and generate PROD Allure Report
+        //             sh '''
+        //                 mkdir -p allure-results-prod
+        //                 cp -r allure-results/* allure-results-prod/ 2>/dev/null || true
+        //                 npx allure generate allure-results-prod --clean -o allure-report-prod || true
+        //             '''
 
-                    // Publish PROD Allure HTML Report
-                    publishHTML(target: [
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'allure-report-prod',
-                        reportFiles: 'index.html',
-                        reportName: 'PROD Allure Report',
-                        reportTitles: 'PROD Allure Report'
-                    ])
+        //             // Publish PROD Allure HTML Report
+        //             publishHTML(target: [
+        //                 allowMissing: true,
+        //                 alwaysLinkToLastBuild: true,
+        //                 keepAll: true,
+        //                 reportDir: 'allure-report-prod',
+        //                 reportFiles: 'index.html',
+        //                 reportName: 'PROD Allure Report',
+        //                 reportTitles: 'PROD Allure Report'
+        //             ])
 
-                    publishHTML(target: [
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'playwright-report',
-                        reportFiles: 'index.html',
-                        reportName: 'PROD Playwright Report',
-                        reportTitles: 'PROD Playwright Report'
-                    ])
+        //             publishHTML(target: [
+        //                 allowMissing: true,
+        //                 alwaysLinkToLastBuild: true,
+        //                 keepAll: true,
+        //                 reportDir: 'playwright-report',
+        //                 reportFiles: 'index.html',
+        //                 reportName: 'PROD Playwright Report',
+        //                 reportTitles: 'PROD Playwright Report'
+        //             ])
 
-                    publishHTML(target: [
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'playwright-html-report',
-                        reportFiles: 'index.html',
-                        reportName: 'PROD HTML Report',
-                        reportTitles: 'PROD Custom HTML Report'
-                    ])
+        //             publishHTML(target: [
+        //                 allowMissing: true,
+        //                 alwaysLinkToLastBuild: true,
+        //                 keepAll: true,
+        //                 reportDir: 'playwright-html-report',
+        //                 reportFiles: 'index.html',
+        //                 reportName: 'PROD HTML Report',
+        //                 reportTitles: 'PROD Custom HTML Report'
+        //             ])
 
-                    archiveArtifacts artifacts: 'allure-results-prod/**/*', allowEmptyArchive: true
-                    archiveArtifacts artifacts: 'test-results/**/*', allowEmptyArchive: true
-                }
-            }
-        }
+        //             archiveArtifacts artifacts: 'allure-results-prod/**/*', allowEmptyArchive: true
+        //             archiveArtifacts artifacts: 'test-results/**/*', allowEmptyArchive: true
+        //         }
+        //     }
+        // }
 
-        // ============================================
+         // ============================================
         // Generate Combined Allure Report (All Environments)
         // ============================================
         stage('📈 Combined Allure Report') {
@@ -431,7 +431,7 @@ pipeline {
                     
                     # Create combined environment.properties
                     echo "Environment=ALL (DEV, QA, STAGE, PROD)" > allure-results-combined/environment.properties
-                    echo "Browser=Chromium" >> allure-results-combined/environment.properties
+                    echo "Browser=Google Chrome" >> allure-results-combined/environment.properties
                     echo "Pipeline=${JOB_NAME}" >> allure-results-combined/environment.properties
                     echo "Build=${BUILD_NUMBER}" >> allure-results-combined/environment.properties
                 '''
@@ -652,8 +652,8 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 </html>""",
                         mimeType: 'text/html',
                         to: env.EMAIL_RECIPIENTS,
-                        from: 'CI Notifications <mail@naveenautomationlabs.com>',
-                        replyTo: 'mail@naveenautomationlabs.com'
+                        from: 'mailto@adithautomation.com',
+                        replyTo: 'mailto@adithautomation.com','adithautomation.com'
                     )
                 } catch (Exception e) {
                     echo "Email notification failed: ${e.message}"

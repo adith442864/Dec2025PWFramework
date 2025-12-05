@@ -36,9 +36,9 @@ pipeline {
         NODE_VERSION = '20'
         CI = 'true'
         PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}/.cache/ms-playwright"
-        SLACK_WEBHOOK_URL = credentials('slack-webhook')
+        SLACK_WEBHOOK_URL = credentials('slack-webhook-token')
         // Email recipients - update these with your actual email addresses
-        EMAIL_RECIPIENTS = 'adithautomation@gmail.com, mail@adithautomation.com'
+        EMAIL_RECIPIENTS = 'naveenanimation20@gmail.com, submit@naveenautomationlabs.com'
     }
 
     options {
@@ -57,8 +57,7 @@ pipeline {
                 echo '============================================'
                 echo '📥 Installing dependencies...'
                 echo '============================================'
-                //sh 'npm ci'
-                sh 'PUPPETEER_SKIP_DOWNLOAD=true npm ci'
+                sh 'npm ci'
 
                 echo '============================================'
                 echo '📁 Creating ESLint report directory...'
@@ -108,8 +107,7 @@ pipeline {
                 echo '============================================'
                 echo '🎭 Installing Playwright browsers...'
                 echo '============================================'
-                //sh 'npx playwright install --with-deps chromium'
-                sh 'npx playwright install chromium'
+                sh 'npx playwright install --with-deps chromium'
 
                 echo '============================================'
                 echo '🧹 Cleaning previous results...'
@@ -652,8 +650,8 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 </html>""",
                         mimeType: 'text/html',
                         to: env.EMAIL_RECIPIENTS,
-                        from: 'CI Notifications <mail@naveenautomationlabs.com>',
-                        replyTo: 'mail@naveenautomationlabs.com'
+                        from: 'mailto@adithautomation.com',
+                        replyTo: 'mailto@adithautomation.com','adithautomation.com'
                     )
                 } catch (Exception e) {
                     echo "Email notification failed: ${e.message}"
