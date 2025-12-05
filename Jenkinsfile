@@ -1,6 +1,30 @@
 // ============================================
 // PLAYWRIGHT AUTO PIPELINE - JENKINSFILE
 // ============================================
+// Flow: lint → dev → qa → stage → prod (automatic)
+// Trigger: Push, PR, or manual build
+// Reports: Separate Allure per environment, Playwright HTML, Custom HTML
+// ✅ ESLint static code analysis
+// ✅ Separate Allure reports per environment
+// ✅ Slack notifications for test results
+// ✅ Email notifications with all report links
+// ============================================
+//
+// Required Jenkins Credentials:
+// ------------------------------------
+// slack-token          - Slack Webhook Token (Secret text)
+// ============================================
+//
+// Required Jenkins Plugins:
+// ------------------------------------
+// - NodeJS Plugin
+// - Allure Jenkins Plugin
+// - HTML Publisher Plugin
+// - Slack Notification Plugin
+// - Email Extension Plugin
+// - Pipeline Stage View Plugin
+// ============================================
+
 
 pipeline {
     agent any
@@ -29,15 +53,20 @@ pipeline {
 
     stages {
         // ============================================
-        // Static Code Analysis (ESLint)
+        // Static Code Analysis (ESLint) + Install browsers
         // ============================================
-        stage('🔍 ESLint Analysis') {
+        stage('ESLint Analysis') {
             steps {
                 echo '============================================'
-                echo '📥 Installing dependencies...'
+                echo '📥 Installing dependencies (npm ci)...'
                 echo '============================================'
-                // Important: avoid Puppeteer ARM64 Chromium download
-                sh 'PUPPETEER_SKIP_DOWNLOAD=true npm ci'
+                sh 'npm ci'
+
+                echo '============================================'
+                echo '🌐 Installing Playwright Chrome browser...'
+                echo '============================================'
+                // Needed because your configs use channel: "chrome"
+                sh 'npx playwright install chrome'
 
                 echo '============================================'
                 echo '📁 Creating ESLint report directory...'
@@ -48,7 +77,10 @@ pipeline {
                 echo '🔍 Running ESLint...'
                 echo '============================================'
                 script {
-                    def eslintStatus = sh(script: 'npm run lint', returnStatus: true)
+                    def eslintStatus = sh(
+                        script: 'npm run lint',
+                        returnStatus: true
+                    )
                     env.ESLINT_STATUS = eslintStatus == 0 ? 'success' : 'failure'
                 }
 
@@ -68,6 +100,7 @@ pipeline {
                         reportName: 'ESLint Report',
                         reportTitles: 'ESLint Analysis'
                     ])
+
                     script {
                         if (env.ESLINT_STATUS == 'failure') {
                             echo '⚠️ ESLint found issues - check the HTML report'
@@ -82,16 +115,8 @@ pipeline {
         // ============================================
         // DEV Environment Tests
         // ============================================
-        stage('🔧 DEV Tests') {
+        stage('DEV Tests') {
             steps {
-                echo '============================================'
-                echo '🎭 Installing Playwright browsers...'
-                echo '============================================'
-                // Playwright tests are using Google Chrome (channel 'chrome')
-                // Error earlier: "distribution 'chrome' is not found"
-                // Fix: install chrome for Playwright
-                sh 'npx playwright install chrome'
-
                 echo '============================================'
                 echo '🧹 Cleaning previous results...'
                 echo '============================================'
@@ -108,7 +133,7 @@ pipeline {
                 }
 
                 echo '============================================'
-                echo '🏷️ Adding Allure environment info...'
+                echo '🏷️ Adding Allure environment info (DEV)...'
                 echo '============================================'
                 sh '''
                     mkdir -p allure-results
@@ -164,7 +189,7 @@ pipeline {
         // ============================================
         // QA Environment Tests
         // ============================================
-        stage('🔍 QA Tests') {
+        stage('QA Tests') {
             steps {
                 echo '============================================'
                 echo '🧹 Cleaning previous results...'
@@ -182,7 +207,7 @@ pipeline {
                 }
 
                 echo '============================================'
-                echo '🏷️ Adding Allure environment info...'
+                echo '🏷️ Adding Allure environment info (QA)...'
                 echo '============================================'
                 sh '''
                     mkdir -p allure-results
@@ -238,7 +263,7 @@ pipeline {
         // ============================================
         // STAGE Environment Tests
         // ============================================
-        stage('🎯 STAGE Tests') {
+        stage('STAGE Tests') {
             steps {
                 echo '============================================'
                 echo '🧹 Cleaning previous results...'
@@ -256,7 +281,7 @@ pipeline {
                 }
 
                 echo '============================================'
-                echo '🏷️ Adding Allure environment info...'
+                echo '🏷️ Adding Allure environment info (STAGE)...'
                 echo '============================================'
                 sh '''
                     mkdir -p allure-results
@@ -312,7 +337,7 @@ pipeline {
         // ============================================
         // PROD Environment Tests
         // ============================================
-        stage('🚀 PROD Tests') {
+        stage('PROD Tests') {
             steps {
                 echo '============================================'
                 echo '🧹 Cleaning previous results...'
@@ -330,7 +355,7 @@ pipeline {
                 }
 
                 echo '============================================'
-                echo '🏷️ Adding Allure environment info...'
+                echo '🏷️ Adding Allure environment info (PROD)...'
                 echo '============================================'
                 sh '''
                     mkdir -p allure-results
@@ -384,12 +409,12 @@ pipeline {
         }
 
         // ============================================
-        // Generate Combined Allure Report (All Environments)
+        // Combined Allure Report (HTML via npx allure)
         // ============================================
-        stage('📈 Combined Allure Report') {
+        stage('Combined Allure Report') {
             steps {
                 echo '============================================'
-                echo '📊 Generating Combined Allure Report...'
+                echo '📊 Generating Combined Allure Report (HTML)...'
                 echo '============================================'
 
                 sh '''
@@ -404,10 +429,9 @@ pipeline {
                     echo "Browser=Google Chrome" >> allure-results-combined/environment.properties
                     echo "Pipeline=${JOB_NAME}" >> allure-results-combined/environment.properties
                     echo "Build=${BUILD_NUMBER}" >> allure-results-combined/environment.properties
-                '''
 
-                // Use node-local Allure CLI instead of Jenkins Allure plugin CLI
-                sh 'npx allure generate allure-results-combined --clean -o allure-report-combined || true'
+                    npx allure generate allure-results-combined --clean -o allure-report-combined || true
+                '''
 
                 publishHTML(target: [
                     allowMissing: true,
@@ -423,7 +447,7 @@ pipeline {
     }
 
     // ============================================
-    // Post-Build Actions (Notifications)
+    // Post-Build Actions
     // ============================================
     post {
         always {
@@ -453,23 +477,129 @@ ${prodEmoji} PROD:  ${prodStatus}
 ============================================
 """
 
-                def overallStatus = 'SUCCESS'
-                def statusEmoji   = '✅'
-                def statusColor   = 'good'
+                env.DEV_EMOJI   = devEmoji
+                env.QA_EMOJI    = qaEmoji
+                env.STAGE_EMOJI = stageEmoji
+                env.PROD_EMOJI  = prodEmoji
+            }
+        }
 
-                if ([devStatus, qaStatus, stageStatus, prodStatus].any { it == 'failure' }) {
-                    overallStatus = 'FAILURE'
-                    statusEmoji   = '❌'
-                    statusColor   = 'danger'
-                } else if ([devStatus, qaStatus, stageStatus, prodStatus].any { it == 'unknown' }) {
-                    overallStatus = 'UNSTABLE'
-                    statusEmoji   = '⚠️'
-                    statusColor   = 'warning'
+        success {
+            echo '✅ Pipeline completed successfully!'
+
+            script {
+                try {
+                    slackSend(
+                        color: 'good',
+                        message: """✅ Playwright Pipeline: All Tests Passed
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+
+DEV:   ${env.DEV_TEST_STATUS}
+QA:    ${env.QA_TEST_STATUS}
+STAGE: ${env.STAGE_TEST_STATUS}
+PROD:  ${env.PROD_TEST_STATUS}
+
+Combined Allure: ${env.BUILD_URL}Combined_20Allure_20Report"""
+                    )
+                } catch (Exception e) {
+                    echo "Slack notification failed: ${e.message}"
                 }
 
-                env.OVERALL_STATUS = overallStatus
-                env.STATUS_EMOJI   = statusEmoji
-                env.STATUS_COLOR   = statusColor
-                env.DEV_EMOJI      = devEmoji
-                env.QA_EMOJI       = qaEmoji
-                env.STAGE_EMOJI    = stageEmoji
+                try {
+                    emailext(
+                        subject: "✅ Playwright Tests Passed - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                        body: """Playwright pipeline SUCCESS.
+
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+
+DEV:   ${env.DEV_TEST_STATUS}
+QA:    ${env.QA_TEST_STATUS}
+STAGE: ${env.STAGE_TEST_STATUS}
+PROD:  ${env.PROD_TEST_STATUS}
+
+Combined Allure Report:
+${env.BUILD_URL}Combined_20Allure_20Report
+""",
+                        mimeType: 'text/plain',
+                        to: env.EMAIL_RECIPIENTS,
+                        from: 'CI Notifications <mail@adithautomation.com>',
+                        replyTo: 'mail@adithautomation.com'
+                    )
+                } catch (Exception e) {
+                    echo "Email notification failed: ${e.message}"
+                }
+            }
+        }
+
+        failure {
+            echo '❌ Pipeline failed!'
+
+            script {
+                try {
+                    slackSend(
+                        color: 'danger',
+                        message: """❌ Playwright Pipeline: Tests Failed
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+
+DEV:   ${env.DEV_TEST_STATUS ?: 'not run'}
+QA:    ${env.QA_TEST_STATUS ?: 'not run'}
+STAGE: ${env.STAGE_TEST_STATUS ?: 'not run'}
+PROD:  ${env.PROD_TEST_STATUS ?: 'not run'}
+
+Build URL: ${env.BUILD_URL}"""
+                    )
+                } catch (Exception e) {
+                    echo "Slack notification failed: ${e.message}"
+                }
+
+                try {
+                    emailext(
+                        subject: "❌ Playwright Tests Failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                        body: """Playwright pipeline FAILED.
+
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+
+DEV:   ${env.DEV_TEST_STATUS ?: 'not run'}
+QA:    ${env.QA_TEST_STATUS ?: 'not run'}
+STAGE: ${env.STAGE_TEST_STATUS ?: 'not run'}
+PROD:  ${env.PROD_TEST_STATUS ?: 'not run'}
+
+Build URL:
+${env.BUILD_URL}
+Console:
+${env.BUILD_URL}console
+""",
+                        mimeType: 'text/plain',
+                        to: env.EMAIL_RECIPIENTS,
+                        from: 'CI Notifications <mail@adithautomation.com>',
+                        replyTo: 'mail@adithautomation.com'
+                    )
+                } catch (Exception e) {
+                    echo "Email notification failed: ${e.message}"
+                }
+            }
+        }
+
+        unstable {
+            echo '⚠️ Pipeline completed with warnings!'
+            script {
+                try {
+                    slackSend(
+                        color: 'warning',
+                        message: """⚠️ Playwright Pipeline: Unstable
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+
+Build URL: ${env.BUILD_URL}"""
+                    )
+                } catch (Exception e) {
+                    echo "Slack notification failed: ${e.message}"
+                }
+            }
+        }
+    }
+}
