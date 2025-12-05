@@ -424,14 +424,14 @@ pipeline {
                     mkdir -p allure-results-combined
                     
                     # Copy all environment results
-                    cp -r allure-results-dev/* allure-results-combined/ 2>/dev/null || true
+                    # cp -r allure-results-dev/* allure-results-combined/ 2>/dev/null || true
                     cp -r allure-results-qa/* allure-results-combined/ 2>/dev/null || true
                     cp -r allure-results-stage/* allure-results-combined/ 2>/dev/null || true
-                    cp -r allure-results-prod/* allure-results-combined/ 2>/dev/null || true
+                    # cp -r allure-results-prod/* allure-results-combined/ 2>/dev/null || true
                     
                     # Create combined environment.properties
-                    echo "Environment=ALL (DEV, QA, STAGE, PROD)" > allure-results-combined/environment.properties
-                    echo "Browser=Google Chrome" >> allure-results-combined/environment.properties
+                    echo "Environment=ALL (QA, STAGE)" > allure-results-combined/environment.properties
+                    echo "Browser=Chromium" >> allure-results-combined/environment.properties
                     echo "Pipeline=${JOB_NAME}" >> allure-results-combined/environment.properties
                     echo "Build=${BUILD_NUMBER}" >> allure-results-combined/environment.properties
                 '''
@@ -461,48 +461,52 @@ pipeline {
             echo '============================================'
 
             script {
-                def devStatus = env.DEV_TEST_STATUS ?: 'unknown'
+                // def devStatus = env.DEV_TEST_STATUS ?: 'unknown'
                 def qaStatus = env.QA_TEST_STATUS ?: 'unknown'
                 def stageStatus = env.STAGE_TEST_STATUS ?: 'unknown'
-                def prodStatus = env.PROD_TEST_STATUS ?: 'unknown'
+                // def prodStatus = env.PROD_TEST_STATUS ?: 'unknown'
 
-                def devEmoji = devStatus == 'success' ? '✅' : '❌'
+                // def devEmoji = devStatus == 'success' ? '✅' : '❌'
                 def qaEmoji = qaStatus == 'success' ? '✅' : '❌'
                 def stageEmoji = stageStatus == 'success' ? '✅' : '❌'
-                def prodEmoji = prodStatus == 'success' ? '✅' : '❌'
+                // def prodEmoji = prodStatus == 'success' ? '✅' : '❌'
 
                 echo """
 ============================================
 📊 Test Results by Environment:
 ============================================
-${devEmoji} DEV:   ${devStatus}
 ${qaEmoji} QA:    ${qaStatus}
 ${stageEmoji} STAGE: ${stageStatus}
-${prodEmoji} PROD:  ${prodStatus}
 ============================================
 """
+                // Commented out DEV and PROD:
+                // ${devEmoji} DEV:   ${devStatus}
+                // ${prodEmoji} PROD:  ${prodStatus}
 
                 def overallStatus = 'SUCCESS'
                 def statusEmoji = '✅'
                 def statusColor = 'good'
 
-                if (devStatus == 'failure' || qaStatus == 'failure' || stageStatus == 'failure' || prodStatus == 'failure') {
+                if (qaStatus == 'failure' || stageStatus == 'failure') {
                     overallStatus = 'FAILURE'
                     statusEmoji = '❌'
                     statusColor = 'danger'
-                } else if (devStatus == 'unknown' || qaStatus == 'unknown' || stageStatus == 'unknown' || prodStatus == 'unknown') {
+                } else if (qaStatus == 'unknown' || stageStatus == 'unknown') {
                     overallStatus = 'UNSTABLE'
                     statusEmoji = '⚠️'
                     statusColor = 'warning'
                 }
+                // Commented out DEV and PROD checks:
+                // if (devStatus == 'failure' || qaStatus == 'failure' || stageStatus == 'failure' || prodStatus == 'failure')
+                // } else if (devStatus == 'unknown' || qaStatus == 'unknown' || stageStatus == 'unknown' || prodStatus == 'unknown')
 
                 env.OVERALL_STATUS = overallStatus
                 env.STATUS_EMOJI = statusEmoji
                 env.STATUS_COLOR = statusColor
-                env.DEV_EMOJI = devEmoji
+                // env.DEV_EMOJI = devEmoji
                 env.QA_EMOJI = qaEmoji
                 env.STAGE_EMOJI = stageEmoji
-                env.PROD_EMOJI = prodEmoji
+                // env.PROD_EMOJI = prodEmoji
             }
         }
 
@@ -521,13 +525,14 @@ ${prodEmoji} PROD:  ${prodStatus}
 *Build:* #${env.BUILD_NUMBER}
 
 *Test Results:*
-${env.DEV_EMOJI} DEV: ${env.DEV_TEST_STATUS}
 ${env.QA_EMOJI} QA: ${env.QA_TEST_STATUS}
 ${env.STAGE_EMOJI} STAGE: ${env.STAGE_TEST_STATUS}
-${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 
-📊 <${env.BUILD_URL}allure|Combined Allure Report>
+📊 <${env.BUILD_URL}Combined_20Allure_20Report|Combined Allure Report>
 🔗 <${env.BUILD_URL}|View Build>"""
+                        // Commented out DEV and PROD:
+                        // ${env.DEV_EMOJI} DEV: ${env.DEV_TEST_STATUS}
+                        // ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
                     )
                 } catch (Exception e) {
                     echo "Slack notification failed: ${e.message}"
@@ -583,6 +588,7 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
                     <th>Playwright Report</th>
                     <th>HTML Report</th>
                 </tr>
+                <!-- Commented out DEV environment
                 <tr>
                     <td>🔧 DEV</td>
                     <td class="success">${env.DEV_TEST_STATUS}</td>
@@ -590,6 +596,7 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
                     <td><a href="${env.BUILD_URL}DEV_20Playwright_20Report" class="btn">Playwright</a></td>
                     <td><a href="${env.BUILD_URL}DEV_20HTML_20Report" class="btn btn-orange">HTML</a></td>
                 </tr>
+                -->
                 <tr>
                     <td>🔍 QA</td>
                     <td class="success">${env.QA_TEST_STATUS}</td>
@@ -604,6 +611,7 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
                     <td><a href="${env.BUILD_URL}STAGE_20Playwright_20Report" class="btn">Playwright</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20HTML_20Report" class="btn btn-orange">HTML</a></td>
                 </tr>
+                <!-- Commented out PROD environment
                 <tr>
                     <td>🚀 PROD</td>
                     <td class="success">${env.PROD_TEST_STATUS}</td>
@@ -611,11 +619,12 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
                     <td><a href="${env.BUILD_URL}PROD_20Playwright_20Report" class="btn">Playwright</a></td>
                     <td><a href="${env.BUILD_URL}PROD_20HTML_20Report" class="btn btn-orange">HTML</a></td>
                 </tr>
+                -->
             </table>
 
             <div class="section-title">📊 Quick Links</div>
             <p style="margin: 15px 0;">
-                <a href="${env.BUILD_URL}allure" class="btn btn-green">📊 Combined Allure Report</a>
+                <a href="${env.BUILD_URL}Combined_20Allure_20Report" class="btn btn-green">📊 Combined Allure Report</a>
                 <a href="${env.BUILD_URL}ESLint_20Report" class="btn btn-purple">🔍 ESLint Report</a>
                 <a href="${env.BUILD_URL}" class="btn">🔗 View Build</a>
                 <a href="${env.BUILD_URL}console" class="btn btn-orange">📋 Console Log</a>
@@ -623,29 +632,24 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 
             <div class="section-title">📁 All Reports</div>
             <table class="status-table">
-                <tr><th>Report Type</th><th>DEV</th><th>QA</th><th>STAGE</th><th>PROD</th></tr>
+                <tr><th>Report Type</th><th>QA</th><th>STAGE</th></tr>
                 <tr>
                     <td><strong>Allure</strong></td>
-                    <td><a href="${env.BUILD_URL}DEV_20Allure_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}QA_20Allure_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20Allure_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}PROD_20Allure_20Report">View</a></td>
                 </tr>
                 <tr>
                     <td><strong>Playwright</strong></td>
-                    <td><a href="${env.BUILD_URL}DEV_20Playwright_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}QA_20Playwright_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20Playwright_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}PROD_20Playwright_20Report">View</a></td>
                 </tr>
                 <tr>
                     <td><strong>Custom HTML</strong></td>
-                    <td><a href="${env.BUILD_URL}DEV_20HTML_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}QA_20HTML_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20HTML_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}PROD_20HTML_20Report">View</a></td>
                 </tr>
             </table>
+            <!-- Commented out DEV and PROD columns -->
         </div>
     </div>
 </body>
@@ -676,13 +680,14 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 *Build:* #${env.BUILD_NUMBER}
 
 *Test Results:*
-${env.DEV_EMOJI ?: '❓'} DEV: ${env.DEV_TEST_STATUS ?: 'not run'}
 ${env.QA_EMOJI ?: '❓'} QA: ${env.QA_TEST_STATUS ?: 'not run'}
 ${env.STAGE_EMOJI ?: '❓'} STAGE: ${env.STAGE_TEST_STATUS ?: 'not run'}
-${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
 
-📊 <${env.BUILD_URL}allure|View Allure Report>
+📊 <${env.BUILD_URL}Combined_20Allure_20Report|View Allure Report>
 🔗 <${env.BUILD_URL}|View Build>"""
+                        // Commented out DEV and PROD:
+                        // ${env.DEV_EMOJI ?: '❓'} DEV: ${env.DEV_TEST_STATUS ?: 'not run'}
+                        // ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
                     )
                 } catch (Exception e) {
                     echo "Slack notification failed: ${e.message}"
@@ -736,6 +741,7 @@ ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
                     <th>Playwright Report</th>
                     <th>HTML Report</th>
                 </tr>
+                <!-- Commented out DEV environment
                 <tr>
                     <td>🔧 DEV</td>
                     <td class="${env.DEV_TEST_STATUS == 'success' ? 'success' : 'failure'}">${env.DEV_TEST_STATUS ?: 'not run'}</td>
@@ -743,6 +749,7 @@ ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
                     <td><a href="${env.BUILD_URL}DEV_20Playwright_20Report" class="btn">Playwright</a></td>
                     <td><a href="${env.BUILD_URL}DEV_20HTML_20Report" class="btn btn-orange">HTML</a></td>
                 </tr>
+                -->
                 <tr>
                     <td>🔍 QA</td>
                     <td class="${env.QA_TEST_STATUS == 'success' ? 'success' : 'failure'}">${env.QA_TEST_STATUS ?: 'not run'}</td>
@@ -757,6 +764,7 @@ ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
                     <td><a href="${env.BUILD_URL}STAGE_20Playwright_20Report" class="btn">Playwright</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20HTML_20Report" class="btn btn-orange">HTML</a></td>
                 </tr>
+                <!-- Commented out PROD environment
                 <tr>
                     <td>🚀 PROD</td>
                     <td class="${env.PROD_TEST_STATUS == 'success' ? 'success' : 'failure'}">${env.PROD_TEST_STATUS ?: 'not run'}</td>
@@ -764,11 +772,12 @@ ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
                     <td><a href="${env.BUILD_URL}PROD_20Playwright_20Report" class="btn">Playwright</a></td>
                     <td><a href="${env.BUILD_URL}PROD_20HTML_20Report" class="btn btn-orange">HTML</a></td>
                 </tr>
+                -->
             </table>
 
             <div class="section-title">📊 Quick Links</div>
             <p style="margin: 15px 0;">
-                <a href="${env.BUILD_URL}allure" class="btn btn-green">📊 Combined Allure Report</a>
+                <a href="${env.BUILD_URL}Combined_20Allure_20Report" class="btn btn-green">📊 Combined Allure Report</a>
                 <a href="${env.BUILD_URL}ESLint_20Report" class="btn btn-purple">🔍 ESLint Report</a>
                 <a href="${env.BUILD_URL}" class="btn">🔗 View Build</a>
                 <a href="${env.BUILD_URL}console" class="btn btn-red">📋 Console Log</a>
@@ -776,29 +785,24 @@ ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
 
             <div class="section-title">📁 All Reports</div>
             <table class="status-table">
-                <tr><th>Report Type</th><th>DEV</th><th>QA</th><th>STAGE</th><th>PROD</th></tr>
+                <tr><th>Report Type</th><th>QA</th><th>STAGE</th></tr>
                 <tr>
                     <td><strong>Allure</strong></td>
-                    <td><a href="${env.BUILD_URL}DEV_20Allure_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}QA_20Allure_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20Allure_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}PROD_20Allure_20Report">View</a></td>
                 </tr>
                 <tr>
                     <td><strong>Playwright</strong></td>
-                    <td><a href="${env.BUILD_URL}DEV_20Playwright_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}QA_20Playwright_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20Playwright_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}PROD_20Playwright_20Report">View</a></td>
                 </tr>
                 <tr>
                     <td><strong>Custom HTML</strong></td>
-                    <td><a href="${env.BUILD_URL}DEV_20HTML_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}QA_20HTML_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20HTML_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}PROD_20HTML_20Report">View</a></td>
                 </tr>
             </table>
+            <!-- Commented out DEV and PROD columns -->
         </div>
     </div>
 </body>
@@ -827,7 +831,7 @@ ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
 *Branch:* ${env.GIT_BRANCH ?: 'N/A'}
 *Build:* #${env.BUILD_NUMBER}
 
-📊 <${env.BUILD_URL}allure|View Allure Report>
+📊 <${env.BUILD_URL}Combined_20Allure_20Report|View Allure Report>
 🔗 <${env.BUILD_URL}|View Build>"""
                     )
                 } catch (Exception e) {
