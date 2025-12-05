@@ -57,7 +57,8 @@ pipeline {
                 echo '============================================'
                 echo '📥 Installing dependencies...'
                 echo '============================================'
-                sh 'npm ci'
+                //sh 'npm ci'
+                sh 'PUPPETEER_SKIP_DOWNLOAD=true npm ci'
 
                 echo '============================================'
                 echo '📁 Creating ESLint report directory...'
