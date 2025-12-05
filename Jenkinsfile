@@ -38,6 +38,9 @@ pipeline {
         CI = 'true'
         PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}/.cache/ms-playwright"
         PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = '0'
+        // Skip Puppeteer browser download (we use Playwright instead)
+        PUPPETEER_SKIP_DOWNLOAD = 'true'
+        PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = 'true'
         // Force Rosetta 2 compatibility for M1 Macs
         ARCHFLAGS = '-arch x86_64'
         SLACK_WEBHOOK_URL = credentials('slack-webhook')
