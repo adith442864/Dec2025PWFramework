@@ -1,4 +1,3 @@
-
 // ============================================
 // PLAYWRIGHT AUTO PIPELINE - JENKINSFILE
 // ============================================
@@ -36,16 +35,10 @@ pipeline {
     environment {
         NODE_VERSION = '20'
         CI = 'true'
-        PLAYWRIGHT_BROWSERS_PATH = "${env.WORKSPACE}/.cache/ms-playwright"
-        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = '0'
-        // Skip Puppeteer browser download (we use Playwright instead)
-        PUPPETEER_SKIP_DOWNLOAD = 'true'
-        PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = 'true'
+        PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}/.cache/ms-playwright"
         SLACK_WEBHOOK_URL = credentials('slack-webhook')
         // Email recipients - update these with your actual email addresses
-        EMAIL_RECIPIENTS = 'adithautomation@gmail.com'
-        // Ensure headless mode in CI
-        PLAYWRIGHT_HEADLESS = '1'
+        EMAIL_RECIPIENTS = 'adithautomation@gmail.com, mail@adithautomation.com'
     }
 
     options {
@@ -62,19 +55,10 @@ pipeline {
         stage('🔍 ESLint Analysis') {
             steps {
                 echo '============================================'
-                echo '🧹 Cleaning workspace...'
-                echo '============================================'
-                sh '''
-                    # Clean node_modules and package-lock to ensure fresh install
-                    rm -rf node_modules package-lock.json
-                    # Clean any cached browsers
-                    rm -rf ${PLAYWRIGHT_BROWSERS_PATH}
-                '''
-
-                echo '============================================'
                 echo '📥 Installing dependencies...'
                 echo '============================================'
-                sh 'npm install'
+                //sh 'npm ci'
+                sh 'PUPPETEER_SKIP_DOWNLOAD=true npm ci'
 
                 echo '============================================'
                 echo '📁 Creating ESLint report directory...'
@@ -124,32 +108,8 @@ pipeline {
                 echo '============================================'
                 echo '🎭 Installing Playwright browsers...'
                 echo '============================================'
-                sh '''
-                    # Clean any existing browser installations
-                    rm -rf ${PLAYWRIGHT_BROWSERS_PATH}
-                    
-                    # Create browser cache directory
-                    mkdir -p ${PLAYWRIGHT_BROWSERS_PATH}
-                    
-                    echo "📍 Browser installation path: ${PLAYWRIGHT_BROWSERS_PATH}"
-                    echo "🖥️  Architecture: $(uname -m)"
-                    echo "💻 OS: $(uname -s)"
-                    
-                    # Universal browser installation (works on x86-64, ARM64, aarch64)
-                    echo "⚙️  Installing Chromium browser (cross-platform)..."
-                    PLAYWRIGHT_BROWSERS_PATH=${PLAYWRIGHT_BROWSERS_PATH} npx playwright install chromium
-                    
-                    # Verify installation
-                    echo "✅ Verifying browser installation..."
-                    ls -la ${PLAYWRIGHT_BROWSERS_PATH}/ || echo "Browser path: ${PLAYWRIGHT_BROWSERS_PATH}"
-                    
-                    # Show Playwright version
-                    npx playwright --version
-                    
-                    # Verify config is using Chromium (not Chrome channel)
-                    echo "🔍 Verifying Playwright config..."
-                    grep -n "name.*Chromium" playwright.config.dev.ts || echo "⚠️ WARNING: Config may not be using Chromium!"
-                '''
+                //sh 'npx playwright install --with-deps chromium'
+                sh 'npx playwright install chromium'
 
                 echo '============================================'
                 echo '🧹 Cleaning previous results...'
@@ -172,7 +132,7 @@ pipeline {
                 sh '''
                     mkdir -p allure-results
                     echo "Environment=DEV" > allure-results/environment.properties
-                    echo "Browser=Google Chrome" >> allure-results/environment.properties
+                    echo "Browser=Chromium" >> allure-results/environment.properties
                     echo "Config=playwright.config.dev.ts" >> allure-results/environment.properties
                 '''
             }
@@ -248,7 +208,7 @@ pipeline {
                 sh '''
                     mkdir -p allure-results
                     echo "Environment=QA" > allure-results/environment.properties
-                    echo "Browser=Google Chrome" >> allure-results/environment.properties
+                    echo "Browser=Chromium" >> allure-results/environment.properties
                     echo "Config=playwright.config.qa.ts" >> allure-results/environment.properties
                 '''
             }
@@ -324,7 +284,7 @@ pipeline {
                 sh '''
                     mkdir -p allure-results
                     echo "Environment=STAGE" > allure-results/environment.properties
-                    echo "Browser=Google Chrome" >> allure-results/environment.properties
+                    echo "Browser=Chromium" >> allure-results/environment.properties
                     echo "Config=playwright.config.stage.ts" >> allure-results/environment.properties
                 '''
             }
@@ -478,19 +438,13 @@ pipeline {
             }
             post {
                 always {
-                    // Generate Combined Allure Report using npx allure
-                    sh '''
-                        npx allure generate allure-results-combined --clean -o allure-report-combined
-                    '''
-                    
-                    publishHTML(target: [
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'allure-report-combined',
-                        reportFiles: 'index.html',
-                        reportName: 'Combined Allure Report',
-                        reportTitles: 'All Environments'
+                    // Generate Combined Allure Report using Allure Jenkins Plugin
+                    allure([
+                        includeProperties: true,
+                        jdk: '',
+                        properties: [],
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [[path: 'allure-results-combined']]
                     ])
                 }
             }
@@ -698,8 +652,8 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 </html>""",
                         mimeType: 'text/html',
                         to: env.EMAIL_RECIPIENTS,
-                        from: 'mailto@adithautomation.com',
-                        replyTo: 'mailto@adithautomation.com'
+                        from: 'CI Notifications <mail@naveenautomationlabs.com>',
+                        replyTo: 'mail@naveenautomationlabs.com'
                     )
                 } catch (Exception e) {
                     echo "Email notification failed: ${e.message}"
@@ -814,7 +768,7 @@ ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
 
             <div class="section-title">📊 Quick Links</div>
             <p style="margin: 15px 0;">
-                <a href="${env.BUILD_URL}Combined_20Allure_20Report" class="btn btn-green">📊 Combined Allure Report</a>
+                <a href="${env.BUILD_URL}allure" class="btn btn-green">📊 Combined Allure Report</a>
                 <a href="${env.BUILD_URL}ESLint_20Report" class="btn btn-purple">🔍 ESLint Report</a>
                 <a href="${env.BUILD_URL}" class="btn">🔗 View Build</a>
                 <a href="${env.BUILD_URL}console" class="btn btn-red">📋 Console Log</a>
