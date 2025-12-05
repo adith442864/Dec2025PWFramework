@@ -46,12 +46,12 @@ export default defineConfig({
   /* ✅ All browsers enabled for manual selection via --project flag */
   projects: [
     {
-      name: 'Google Chrome',
+      name: 'Chromium',
       use: {
-        channel: 'chrome',
+        ...devices['Desktop Chrome'],
         viewport: { width: 1920, height: 1080 },  // ✅ Fixed viewport for CI (no --start-maximized in headless)
         launchOptions: {
-          args: ['--window-size=1920,1080'],
+          args: process.env.CI ? ['--disable-dev-shm-usage', '--window-size=1920,1080'] : ['--window-size=1920,1080'],
         }
       }
     },

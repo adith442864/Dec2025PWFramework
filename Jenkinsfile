@@ -41,8 +41,6 @@ pipeline {
         // Skip Puppeteer browser download (we use Playwright instead)
         PUPPETEER_SKIP_DOWNLOAD = 'true'
         PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = 'true'
-        // Force Rosetta 2 compatibility for M1 Macs
-        ARCHFLAGS = '-arch x86_64'
         SLACK_WEBHOOK_URL = credentials('slack-webhook')
         // Email recipients - update these with your actual email addresses
         EMAIL_RECIPIENTS = 'mailto@adithautomation.com'
@@ -124,23 +122,18 @@ pipeline {
                     mkdir -p ${PLAYWRIGHT_BROWSERS_PATH}
                     
                     echo "📍 Browser installation path: ${PLAYWRIGHT_BROWSERS_PATH}"
+                    echo "🖥️  Architecture: $(uname -m)"
+                    echo "💻 OS: $(uname -s)"
                     
-                    # Check if running on Apple Silicon (M1/M2/M3)
-                    if [[ $(uname -m) == "arm64" ]]; then
-                        echo "🍎 Apple Silicon detected - Installing with ARM64 support"
-                        # Force fresh installation of browsers
-                        PLAYWRIGHT_BROWSERS_PATH=${PLAYWRIGHT_BROWSERS_PATH} npx playwright install --force chromium webkit
-                    else
-                        echo "💻 x86_64 detected - Installing standard browsers"
-                        # Force fresh installation of browsers
-                        PLAYWRIGHT_BROWSERS_PATH=${PLAYWRIGHT_BROWSERS_PATH} npx playwright install --force chromium
-                    fi
+                    # Universal browser installation (works on x86-64, ARM64, aarch64)
+                    echo "⚙️  Installing Chromium browser (cross-platform)..."
+                    PLAYWRIGHT_BROWSERS_PATH=${PLAYWRIGHT_BROWSERS_PATH} npx playwright install chromium
                     
-                    # Verify browsers are installed
+                    # Verify installation
                     echo "✅ Verifying browser installation..."
-                    ls -la ${PLAYWRIGHT_BROWSERS_PATH}/
+                    ls -la ${PLAYWRIGHT_BROWSERS_PATH}/ || echo "Browser path: ${PLAYWRIGHT_BROWSERS_PATH}"
                     
-                    # Show Playwright version and browser info
+                    # Show Playwright version
                     npx playwright --version
                 '''
 
