@@ -698,8 +698,8 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 </html>""",
                         mimeType: 'text/html',
                         to: env.EMAIL_RECIPIENTS,
-                        from: 'CI Notifications <mail@naveenautomationlabs.com>',
-                        replyTo: 'mail@naveenautomationlabs.com'
+                        from: 'mailto@adithautomation.com',
+                        replyTo: 'mailto@adithautomation.com'
                     )
                 } catch (Exception e) {
                     echo "Email notification failed: ${e.message}"
