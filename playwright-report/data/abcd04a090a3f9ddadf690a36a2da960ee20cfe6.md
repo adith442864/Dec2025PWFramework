@@ -1,0 +1,238 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - button "$ " [ref=e7] [cursor=pointer]:
+        - strong [ref=e8]: $
+        - generic [ref=e9]: 
+      - list [ref=e11]:
+        - listitem [ref=e12]:
+          - link "" [ref=e13] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=information/contact
+            - generic [ref=e14]: 
+        - listitem [ref=e15]:
+          - link "" [ref=e16] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/account
+            - generic [ref=e17]: 
+        - listitem [ref=e19]:
+          - link "" [ref=e20] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/wishlist
+            - generic [ref=e21]: 
+        - listitem [ref=e22]:
+          - link "" [ref=e23] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=checkout/cart
+            - generic [ref=e24]: 
+        - listitem [ref=e25]:
+          - link "" [ref=e26] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=checkout/checkout
+            - generic [ref=e27]: 
+  - banner [ref=e28]:
+    - generic [ref=e30]:
+      - link "naveenopencart" [ref=e33] [cursor=pointer]:
+        - /url: https://naveenautomationlabs.com/opencart/index.php?route=common/home
+        - img "naveenopencart" [ref=e34]
+      - generic [ref=e36]:
+        - textbox "Search" [ref=e37]
+        - button "" [ref=e39] [cursor=pointer]:
+          - generic [ref=e40]: 
+      - button " 0 item(s) - $0.00" [ref=e43] [cursor=pointer]:
+        - generic [ref=e44]: 
+        - text: 0 item(s) - $0.00
+  - navigation [ref=e46]:
+    - generic: 
+    - list [ref=e48]:
+      - listitem [ref=e49]:
+        - link "Desktops" [ref=e50] [cursor=pointer]:
+          - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=20
+      - listitem [ref=e51]:
+        - link "Laptops & Notebooks" [ref=e52] [cursor=pointer]:
+          - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=18
+      - listitem [ref=e53]:
+        - link "Components" [ref=e54] [cursor=pointer]:
+          - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=25
+        - generic [ref=e55]:
+          - list [ref=e57]:
+            - listitem [ref=e58]:
+              - link "Mice and Trackballs (0)" [ref=e59] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=25_29
+            - listitem [ref=e60]:
+              - link "Monitors (2)" [ref=e61] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=25_28
+            - listitem [ref=e62]:
+              - link "Printers (0)" [ref=e63] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=25_30
+            - listitem [ref=e64]:
+              - link "Scanners (0)" [ref=e65] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=25_31
+            - listitem [ref=e66]:
+              - link "Web Cameras (0)" [ref=e67] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=25_32
+          - link "Show All Components" [ref=e68] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=25
+      - listitem [ref=e69]:
+        - link "Tablets" [ref=e70] [cursor=pointer]:
+          - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=57
+      - listitem [ref=e71]:
+        - link "Software" [ref=e72] [cursor=pointer]:
+          - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=17
+      - listitem [ref=e73]:
+        - link "Phones & PDAs" [ref=e74] [cursor=pointer]:
+          - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=24
+      - listitem [ref=e75]:
+        - link "Cameras" [ref=e76] [cursor=pointer]:
+          - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=33
+      - listitem [ref=e77]:
+        - link "MP3 Players" [ref=e78] [cursor=pointer]:
+          - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/category&path=34
+  - generic [ref=e79]:
+    - list [ref=e80]:
+      - listitem [ref=e81]:
+        - link "" [ref=e82] [cursor=pointer]:
+          - /url: https://naveenautomationlabs.com/opencart/index.php?route=common/home
+          - generic [ref=e83]: 
+      - listitem [ref=e84]:
+        - link "Account" [ref=e85] [cursor=pointer]:
+          - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/account
+    - generic [ref=e86]:
+      - generic [ref=e87]:
+        - heading "My Account" [level=2] [ref=e88]
+        - list [ref=e89]:
+          - listitem [ref=e90]:
+            - link "Edit your account information" [ref=e91] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/edit
+          - listitem [ref=e92]:
+            - link "Change your password" [ref=e93] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/password
+          - listitem [ref=e94]:
+            - link "Modify your address book entries" [ref=e95] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/address
+          - listitem [ref=e96]:
+            - link "Modify your wish list" [ref=e97] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/wishlist
+        - heading "My Orders" [level=2] [ref=e98]
+        - list [ref=e99]:
+          - listitem [ref=e100]:
+            - link "View your order history" [ref=e101] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/order
+          - listitem [ref=e102]:
+            - link "Downloads" [ref=e103] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/download
+          - listitem [ref=e104]:
+            - link "Your Reward Points" [ref=e105] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/reward
+          - listitem [ref=e106]:
+            - link "View your return requests" [ref=e107] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/return
+          - listitem [ref=e108]:
+            - link "Your Transactions" [ref=e109] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/transaction
+          - listitem [ref=e110]:
+            - link "Recurring payments" [ref=e111] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/recurring
+        - heading "My Affiliate Account" [level=2] [ref=e112]
+        - list [ref=e113]:
+          - listitem [ref=e114]:
+            - link "Register for an affiliate account" [ref=e115] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/affiliate/add
+        - heading "Newsletter" [level=2] [ref=e116]
+        - list [ref=e117]:
+          - listitem [ref=e118]:
+            - link "Subscribe / unsubscribe to newsletter" [ref=e119] [cursor=pointer]:
+              - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/newsletter
+      - complementary [ref=e120]:
+        - generic [ref=e121]:
+          - link "My Account" [ref=e122] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/account
+          - link "Edit Account" [ref=e123] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/edit
+          - link "Password" [ref=e124] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/password
+          - link "Address Book" [ref=e125] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/address
+          - link "Wish List" [ref=e126] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/wishlist
+          - link "Order History" [ref=e127] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/order
+          - link "Downloads" [ref=e128] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/download
+          - link "Recurring payments" [ref=e129] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/recurring
+          - link "Reward Points" [ref=e130] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/reward
+          - link "Returns" [ref=e131] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/return
+          - link "Transactions" [ref=e132] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/transaction
+          - link "Newsletter" [ref=e133] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/newsletter
+          - link "Logout" [ref=e134] [cursor=pointer]:
+            - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/logout
+  - contentinfo [ref=e135]:
+    - generic [ref=e136]:
+      - generic [ref=e137]:
+        - generic [ref=e138]:
+          - heading "Information" [level=5] [ref=e139]
+          - list [ref=e140]:
+            - listitem [ref=e141]:
+              - link "About Us" [ref=e142] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=information/information&information_id=4
+            - listitem [ref=e143]:
+              - link "Delivery Information" [ref=e144] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=information/information&information_id=6
+            - listitem [ref=e145]:
+              - link "Privacy Policy" [ref=e146] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=information/information&information_id=3
+            - listitem [ref=e147]:
+              - link "Terms & Conditions" [ref=e148] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=information/information&information_id=5
+        - generic [ref=e149]:
+          - heading "Customer Service" [level=5] [ref=e150]
+          - list [ref=e151]:
+            - listitem [ref=e152]:
+              - link "Contact Us" [ref=e153] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=information/contact
+            - listitem [ref=e154]:
+              - link "Returns" [ref=e155] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/return/add
+            - listitem [ref=e156]:
+              - link "Site Map" [ref=e157] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=information/sitemap
+        - generic [ref=e158]:
+          - heading "Extras" [level=5] [ref=e159]
+          - list [ref=e160]:
+            - listitem [ref=e161]:
+              - link "Brands" [ref=e162] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/manufacturer
+            - listitem [ref=e163]:
+              - link "Gift Certificates" [ref=e164] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/voucher
+            - listitem [ref=e165]:
+              - link "Affiliate" [ref=e166] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=affiliate/login
+            - listitem [ref=e167]:
+              - link "Specials" [ref=e168] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=product/special
+        - generic [ref=e169]:
+          - heading "My Account" [level=5] [ref=e170]
+          - list [ref=e171]:
+            - listitem [ref=e172]:
+              - link "My Account" [ref=e173] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/account
+            - listitem [ref=e174]:
+              - link "Order History" [ref=e175] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/order
+            - listitem [ref=e176]:
+              - link "Wish List" [ref=e177] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/wishlist
+            - listitem [ref=e178]:
+              - link "Newsletter" [ref=e179] [cursor=pointer]:
+                - /url: https://naveenautomationlabs.com/opencart/index.php?route=account/newsletter
+      - separator [ref=e180]
+      - paragraph [ref=e181]:
+        - text: Powered By
+        - link "OpenCart" [ref=e182] [cursor=pointer]:
+          - /url: http://www.opencart.com
+        - text: naveenopencart © 2025
+```
