@@ -1,0 +1,4 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","9","sample test @sample","Google Chrome","2026-01-04","passed","2026-01-04","","loginpage.spec.ts","",""
+"","5","verify valid login @login","Google Chrome","2026-01-04","failed","2026-01-04","","loginpage.spec.ts","",""
+"","4","verify Invalid login @wip","Google Chrome","2026-01-04","failed","2026-01-04","","loginpage.spec.ts","",""
