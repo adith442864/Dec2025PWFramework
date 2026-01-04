@@ -416,7 +416,7 @@ pipeline {
         stage('📈 Combined Allure Report') {
             steps {
                 echo '============================================'
-                echo '📊 Generating Combined Allure Report...'
+                echo '📊 Generating Combined Allure Report....'
                 echo '============================================'
 
                 sh '''
